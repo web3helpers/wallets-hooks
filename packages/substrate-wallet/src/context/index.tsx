@@ -1,8 +1,16 @@
-import { SubscriptionFn, Wallet } from "@talismn/connect-wallets";
-import { createContext, Dispatch, ReactNode, Reducer, useReducer } from "react";
+import { WalletAccount, getWallets, Wallet } from "@talismn/connect-wallets";
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  Reducer,
+  useContext,
+  useEffect,
+  useReducer,
+} from "react";
 
 interface WalletConfigProps {
-  children: ReactNode;
+  children?: ReactNode;
   config: {
     dappName: string;
   };
@@ -11,8 +19,8 @@ interface WalletConfigProps {
 interface WalletState {
   address?: string;
   dappName: string;
-  connnectedWallet?: string;
-  subscribe?: (callback: SubscriptionFn) => unknown;
+  account?: WalletAccount;
+  wallet?: Wallet;
 }
 
 interface WalletAction {
@@ -30,12 +38,18 @@ function walletReducer(state: WalletState, action: WalletAction) {
 
   switch (action.type) {
     case "connect": {
-      const { address, connector } = action.payload as {
-        connector: Wallet;
-        address: string;
+      const { wallet, account } = action.payload as {
+        wallet: Wallet;
+        account: WalletAccount;
       };
-      const subscribe = connector.subscribeAccounts;
-      return { ...state, address, subscribe };
+      return { ...state, wallet, account, address: account.address };
+    }
+    case "updateAddress": {
+      const { account } = action.payload as {
+        account: WalletAccount;
+      };
+
+      return { ...state, address: account.address, account };
     }
     default: {
       throw new Error(`Unhandled action type: ${action}`);
@@ -51,6 +65,26 @@ function WalletConfig({ children, config: { dappName } }: WalletConfigProps) {
     }
   );
   const value = { state, dispatch };
+
+  useEffect(() => {
+    const unsubcsribe = state.wallet?.subscribeAccounts(
+      (accounts: WalletAccount[] | undefined) => {
+        const address = accounts?.[0]?.address;
+        if (address && address != state.address)
+          dispatch({
+            type: "updateAddress",
+            payload: {
+              address,
+              account: accounts[0],
+            },
+          });
+      }
+    );
+    return () => {
+      if (typeof unsubcsribe === "function") unsubcsribe();
+    };
+  }, [state, dispatch]);
+
   return (
     <SubstrateWallet.Provider value={value}>
       {children}
@@ -58,4 +92,9 @@ function WalletConfig({ children, config: { dappName } }: WalletConfigProps) {
   );
 }
 
-export { WalletConfig };
+function useClient() {
+  const { state } = useContext(SubstrateWallet);
+  return state;
+}
+
+export { WalletConfig, useClient, getWallets };

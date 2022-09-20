@@ -1,31 +1,36 @@
 import { Wallet } from '@talismn/connect-wallets'
-import { useContext, useMemo, useState } from 'react'
+import { useCallback, useContext, useMemo, useState } from 'react'
 import { SubstrateWallet } from '../context'
 
 export function useAccounts() {
-	const [loading, setLoading] = useState(false)
+	const [loading, setLoading] = useState('')
 	const { state, dispatch } = useContext(SubstrateWallet)
-
 	const address = useMemo(() => state.address, [state])
 
-	async function connect(connector: Wallet) {
-		setLoading(true)
-		await connector.enable(state.dappName)
-		await connector.getAccounts()
-		if (!dispatch) return
-		dispatch({
-			type: 'connect',
-			payload: { address: address ?? '', connector },
-		})
-	}
+	const connect = useCallback(
+		async (connector: Wallet) => {
+			setLoading(connector.title)
+			console.log('ctest')
+			await connector.enable(state.dappName)
+			const accounts = await connector.getAccounts()
+			if (!dispatch) return
+			if (!accounts[0]) return
+			dispatch({
+				type: 'connect',
+				payload: { account: accounts[0], wallet: connector },
+			})
+			setLoading('')
+		},
+		[setLoading, dispatch],
+	)
 
-	function disconnect() {
+	const disconnect = useCallback(() => {
 		if (!dispatch) return
 		dispatch({
 			type: 'disconnect',
 			payload: '',
 		})
-	}
+	}, [dispatch])
 
 	return { loading, connect, disconnect, address }
 }

@@ -1,8 +1,9 @@
 {
 	"name": "@web3helpers/substrate-wallet",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"type": "module",
 	"description": "React hooks for subsstrate wallet",
+	"keywords": ["substrate", "web3helpers"],
 	"main": "dist/index.cjs",
 	"exports": {
 		"./package.json": "./package.json",
