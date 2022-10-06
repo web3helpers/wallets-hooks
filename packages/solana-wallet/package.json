@@ -1,9 +1,9 @@
 {
-	"name": "@web3helpers/substrate-wallet",
-	"version": "0.1.1",
+	"name": "@web3helpers/solana-wallet",
+	"version": "0.1.0",
 	"type": "module",
-	"description": "React hooks for subsstrate wallet",
-	"keywords": ["substrate", "web3helpers"],
+	"description": "React hooks for solana wallet",
+	"keywords": ["solana", "web3helpers"],
 	"main": "dist/index.cjs",
 	"exports": {
 		"./package.json": "./package.json",
@@ -43,10 +43,8 @@
 	},
 	"packageManager": "pnpm@7.11.0",
 	"dependencies": {
-		"@talismn/connect-wallets": "^1.2.1",
 		"@types/react": "^18.0.20",
 		"react": "^18.2.0",
-		"react-dom": "^18.2.0",
-		"zustand": "^4.1.1"
+		"react-dom": "^18.2.0"
 	}
 }
