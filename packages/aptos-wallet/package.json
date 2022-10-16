@@ -1,6 +1,6 @@
 {
 	"name": "@web3helpers/aptos-wallet",
-	"version": "0.1.1",
+	"version": "0.1.7",
 	"type": "module",
 	"description": "React hooks for subsstrate wallet",
 	"keywords": [
@@ -20,7 +20,7 @@
 		"dist"
 	],
 	"scripts": {
-		"build": "tsup",
+		"build": "tsup --loader '.svg=dataurl'",
 		"format": "dprint fmt",
 		"lint": "run-p lint:*",
 		"lint:format": "dprint check",

@@ -13,9 +13,15 @@ interface WalletConfigProps {
   children?: ReactNode;
 }
 
+enum Network {
+  Testnet = "Testnet",
+  Mainnet = "Mainnet",
+  Devnet = "Devnet",
+}
 interface WalletState {
   address?: string;
   client?: AptosClient;
+  network?: Network;
 }
 
 interface WalletAction {
@@ -33,11 +39,11 @@ function walletReducer(state: WalletState, action: WalletAction) {
 
   switch (action.type) {
     case "connect": {
-      const { address, client } = action.payload as {
+      const { address, network } = action.payload as {
         address: string;
-        client: AptosClient
+        network: Network;
       };
-      return { ...state, address, client };
+      return { ...state, address, network };
     }
     case "disconnect": {
       return {};
@@ -64,4 +70,3 @@ function useClient() {
 }
 
 export { WalletConfig, useClient };
-

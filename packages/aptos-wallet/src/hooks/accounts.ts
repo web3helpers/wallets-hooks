@@ -1,4 +1,3 @@
-import { AptosClient } from 'aptos'
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { AptosWallet } from '../context'
 
@@ -8,19 +7,30 @@ export function useAccounts() {
 	const address = useMemo(() => state.address, [state])
 
 	const connect = useCallback(async () => {
-		setLoading('Aptos')
-		await (window as any).aptos.connect()
-		const status = await (window as any).aptos.isConnected()
-		if (!status) return
-		const address = await (window as any).aptos.account()
-		const client = new AptosClient('https://fullnode.devnet.aptoslabs.com/v1')
-		if (!dispatch) return
-		if (!address) return
-		dispatch({
-			type: 'connect',
-			payload: { address, client },
-		})
-		setLoading('')
+		setLoading('Petra')
+		let wallet
+		if ('aptos' in window) {
+			wallet = (window as any).aptos
+		} else {
+			setLoading('')
+			window.open('https://petra.app/', `_blank`)
+			return
+		}
+		try {
+			await wallet.connect()
+			const network = await wallet.network()
+			const { address } = await wallet.account()
+			if (!dispatch) return
+			if (!address) return
+			dispatch({
+				type: 'connect',
+				payload: { address, network },
+			})
+		} catch (error) {
+			console.log(error)
+		} finally {
+			setLoading('')
+		}
 	}, [setLoading, dispatch])
 
 	const disconnect = useCallback(async () => {
