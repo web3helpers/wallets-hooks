@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react'
+import { useContext } from 'react'
 import { AptosWallet } from '../context'
 
 export interface SignMessagePayload {
@@ -21,12 +21,10 @@ export interface SignMessageResponse {
 }
 export function useSigner() {
 	const { state } = useContext(AptosWallet)
-	const signRaw = async (message: SignMessagePayload): Promise<string> => {
-		const { signature } = await (window as any).aptos.signRaw({
-			type: 'payload',
-			data: message,
-			address: state.address,
-		})
+	async function signRaw(message: SignMessagePayload): Promise<string> {
+		const { signature }: SignMessageResponse = await state.wallet.signMessage(
+			message,
+		)
 		return signature
 	}
 	return signRaw

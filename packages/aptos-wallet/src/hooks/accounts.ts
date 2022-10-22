@@ -24,7 +24,7 @@ export function useAccounts() {
 			if (!address) return
 			dispatch({
 				type: 'connect',
-				payload: { address, network },
+				payload: { address, network, wallet },
 			})
 		} catch (error) {
 			console.log(error)
@@ -35,7 +35,7 @@ export function useAccounts() {
 
 	const disconnect = useCallback(async () => {
 		if (!dispatch) return
-		await (window as any).aptos.disconnect()
+		await state.wallet.disconnect()
 		dispatch({
 			type: 'disconnect',
 			payload: '',
